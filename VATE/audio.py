@@ -14,8 +14,8 @@ from tqdm import trange
 from sklearn import preprocessing
 
 # faceQs modules
-from video import Media
-from dataset import DatasetFS
+from VATE.video import Media
+from VATE.dataset import DatasetFS
 from VATE.dataset_utils import *
 from VATE.utils import *
 
