@@ -8,10 +8,10 @@ import torch
 from torchvision import transforms
 
 # faceQs modules
-from dataset import DatasetFS
-from media import Media
-from utils import *
-from dataset_utils import *
+from VATE.dataset import DatasetFS
+from VATE.media import Media
+from VATE.utils import *
+from VATE.dataset_utils import *
 
 class Video(Media):
     """

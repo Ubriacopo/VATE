@@ -7,8 +7,8 @@ import random
 import numpy as np
 
 from collections import defaultdict
-from dataset import DatasetFS
-from utils import *
+from VATE.dataset import DatasetFS
+from VATE.utils import *
 
 class VATEDataset(DatasetFS):
     """

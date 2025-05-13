@@ -16,8 +16,8 @@ from sklearn import preprocessing
 # faceQs modules
 from video import Media
 from dataset import DatasetFS
-from dataset_utils import *
-from utils import *
+from VATE.dataset_utils import *
+from VATE.utils import *
 
 
 class Audio(Media):

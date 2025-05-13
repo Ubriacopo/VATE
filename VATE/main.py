@@ -3,16 +3,16 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from utils import *
+from VATE.utils import *
 #from swin_transformer import SwinTransformer3D
 #from torchvision.models.video import mvit_v1_b
 from contrastive_model import Contrastive_model
 from transformers import VivitImageProcessor, BertTokenizer
-from VATE import VATEDataset
+from VATE.VATE import VATEDataset
 from tqdm import trange
-from video import Video
-from audio import Audio
-from text import Text
+from VATE.video import Video
+from VATE.audio import Audio
+from VATE.text import Text
 from torch.utils.data import Dataset
 import pickle 
 import os
@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader
 from transformers import VivitForVideoClassification, BertModel
 import torchaudio
 # from torch_geometric.data import Data
-from train_test import train_test_contrastive
+from VATE.train_test import train_test_contrastive
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Config:

@@ -3,9 +3,9 @@ import pandas as pd
 from abc import ABC, abstractmethod
 
 # faceQs modules
-from dataset import DatasetFS
-from dataset_utils import *
-from utils import *
+from VATE.dataset import DatasetFS
+from VATE.dataset_utils import *
+from VATE.utils import *
 
 
 class Media(ABC):
@@ -35,9 +35,9 @@ class Media(ABC):
         verbatimT(1, 1, "done.\n")
 
     def set_dataset(
-        self,
-        dataset: DatasetFS,
-        store_info=True,
+            self,
+            dataset: DatasetFS,
+            store_info=True,
     ) -> None:
         """
         Sets a new dataset to process for the Media object.
@@ -81,7 +81,7 @@ class Media(ABC):
         verbatimT(self.verbose, 1, "Media descriptor stored into file: " + pathout)
 
     @abstractmethod
-    def merge_info_dataset():
+    def merge_info_dataset(self):
         """
         Merges all Media info in the dataset Dataset as a dict.
         The main container to merge is self.data_frame

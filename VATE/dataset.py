@@ -1,14 +1,12 @@
-import os
 from typing import Iterable
 import pandas as pd
 from abc import ABC, abstractmethod
 from pathlib import Path
 import random
-import numpy as np
 
 # faceQs modules
-from utils import *
-from dataset_utils import *
+from VATE.utils import *
+from VATE.dataset_utils import *
 
 
 class DatasetFS(ABC):
