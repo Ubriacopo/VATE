@@ -1,18 +1,18 @@
-import cv2
 import os
-from moviepy.editor import VideoFileClip
+
+import cv2
+import matplotlib.pyplot as plt
 import mediapipe as mp
 import numpy as np
-import matplotlib.pyplot as plt
 from pytubefix import YouTube
-import argparse
+
 
 class VideoProcessor:
     def __init__(self, video_file, text_file):
         self.video_file = video_file
         self.text_file = text_file
-        
-    def detect_faces(self, frame, face_detection):  
+
+    def detect_faces(self, frame, face_detection):
         """
         Detects faces in a given frame using the MediaPipe face detection model.
         
@@ -36,7 +36,8 @@ class VideoProcessor:
             reduction_factor = 0.1
             new_h, new_w = int(h * (1 - reduction_factor)), int(w * (1 - reduction_factor))
             new_ymin, new_xmin = ymin + (h - new_h) // 2, xmin + (w - new_w) // 2
-            new_ymin, new_xmin, new_ymax, new_xmax = int(new_ymin * image_height), int(new_xmin * image_width), int((new_ymin + new_h) * image_height), int((new_xmin + new_w) * image_width)
+            new_ymin, new_xmin, new_ymax, new_xmax = int(new_ymin * image_height), int(new_xmin * image_width), int(
+                (new_ymin + new_h) * image_height), int((new_xmin + new_w) * image_width)
 
             # extraction of reducted bbox
             roi = rgb_frame[new_ymin:new_ymin + new_ymax, new_xmin:new_xmin + new_xmax]
@@ -68,15 +69,15 @@ class VideoProcessor:
             list: A list of tuples, where each tuple represents a cleaned segment of the video, containing the start and end times of the segment.
         """
         cleaned_seconds = []
-        t_min,t_max = 6, 15
-        for i in range(len(seconds_combined)-1):
-            if (seconds_combined[i+1] - seconds_combined[i]) >= t_min:
-                if (seconds_combined[i+1] - seconds_combined[i]) >= t_max:
+        t_min, t_max = 6, 15
+        for i in range(len(seconds_combined) - 1):
+            if (seconds_combined[i + 1] - seconds_combined[i]) >= t_min:
+                if (seconds_combined[i + 1] - seconds_combined[i]) >= t_max:
                     cleaned_seconds.append((seconds_combined[i], seconds_combined[i] + t_max))
                     seconds_combined[i] = seconds_combined[i] + t_max
                 else:
-                    cleaned_seconds.append((seconds_combined[i], seconds_combined[i+1] - 1/fps))
-            
+                    cleaned_seconds.append((seconds_combined[i], seconds_combined[i + 1] - 1 / fps))
+
         print("Secondi puliti:")
         print(cleaned_seconds)
         return cleaned_seconds
@@ -102,7 +103,7 @@ class VideoProcessor:
             print("Error: impossible to write on the file.")
 
     @staticmethod
-    def calc_threshold(vector): 
+    def calc_threshold(vector):
         """
         Calculates a threshold value for a given vector.
         
@@ -121,7 +122,7 @@ class VideoProcessor:
         mean_val = np.mean(vector)
         threshold = (max_val + mean_val) / 4
         return threshold
-        
+
     @staticmethod
     def plotting(vectors, thresholds, names):
         """
@@ -134,7 +135,7 @@ class VideoProcessor:
         
         This function creates a set of subplots, one for each vector, and plots the vector along with a horizontal red line indicating the calculated threshold value. The title of each subplot is determined based on whether the vector is related to RGB or bounding box (BB) data.
         """
-                # Creazione dei subplots
+        # Creazione dei subplots
         fig, axs = plt.subplots(len(vectors), 1, figsize=(10, 8))
 
         for i, (vector, threshold, name) in enumerate(zip(vectors, thresholds, names)):
@@ -180,8 +181,8 @@ class VideoProcessor:
             title = yt.title
             title = title.replace(" ", "_")
             stream = yt.streams.get_highest_resolution()
-            video_path = stream.download(filename = title)
-            #documentation: https://pypi.org/project/pafy/
+            video_path = stream.download(filename=title)
+            # documentation: https://pypi.org/project/pafy/
 
             cap = cv2.VideoCapture(video_path)
             fps = cap.get(cv2.CAP_PROP_FPS)
@@ -189,7 +190,7 @@ class VideoProcessor:
             if not cap.isOpened():
                 print("Error: impossible to open the video.")
                 return
-            
+
             currRGB, currBB = [], []
             prev_frame_bb, prev_frame_rgb = None, None
             norm_diff_rgb, norm_diff_bb = 0, 0
@@ -210,7 +211,7 @@ class VideoProcessor:
 
                     # frame_index = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
                     # if frame_index > 0:
-                        # frame_index -= 1
+                    # frame_index -= 1
                     # second = frame_index / fps
 
                     if current_frame_bb and prev_frame_bb and current_frame_rgb and prev_frame_rgb:
@@ -264,8 +265,8 @@ class VideoProcessor:
             bool: True if subvideos were extracted, False otherwise.
         """
         vecRGB, vecBB, fps, video_path = self.normalizing_vector()
-        if len(vecRGB)>0 and len(vecBB)>0:
-            threshold_RGB = VideoProcessor.calc_threshold(vecRGB) 
+        if len(vecRGB) > 0 and len(vecBB) > 0:
+            threshold_RGB = VideoProcessor.calc_threshold(vecRGB)
             threshold_BB = VideoProcessor.calc_threshold(vecBB)
             print("threshold: ", threshold_BB, threshold_RGB)
 
@@ -275,7 +276,7 @@ class VideoProcessor:
                 for i in range(len(vecRGB)):
 
                     if vecRGB[i] > threshold_RGB or vecBB[i] > threshold_BB:
-                        seconds_combined.append(i/fps)
+                        seconds_combined.append(i / fps)
             else:
                 print("Error: vectors dimension not consistent")
 
@@ -296,10 +297,9 @@ class VideoProcessor:
             print("Video not extracted")
             return False
 
-        #VideoProcessor.plotting([vecBB, vecRGB], [threshold_BB, threshold_RGB], ['currBB', 'currRGB'])
+        # VideoProcessor.plotting([vecBB, vecRGB], [threshold_BB, threshold_RGB], ['currBB', 'currRGB'])
 
-            
-    def count_faces(self, frame, face_detection):  
+    def count_faces(self, frame, face_detection):
         """
         Detects faces in a given frame using the MediaPipe face detection model.
         
@@ -323,7 +323,8 @@ class VideoProcessor:
             reduction_factor = 0.1
             new_h, new_w = int(h * (1 - reduction_factor)), int(w * (1 - reduction_factor))
             new_ymin, new_xmin = ymin + (h - new_h) // 2, xmin + (w - new_w) // 2
-            new_ymin, new_xmin, new_ymax, new_xmax = int(new_ymin * image_height), int(new_xmin * image_width), int((new_ymin + new_h) * image_height), int((new_xmin + new_w) * image_width)
+            new_ymin, new_xmin, new_ymax, new_xmax = int(new_ymin * image_height), int(new_xmin * image_width), int(
+                (new_ymin + new_h) * image_height), int((new_xmin + new_w) * image_width)
 
             # Estrarre la regione della bounding box ridotta
             roi = rgb_frame[new_ymin:new_ymin + new_ymax, new_xmin:new_xmin + new_xmax]

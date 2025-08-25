@@ -1,32 +1,18 @@
-import numpy as np
-from dataclasses import dataclass
-import librosa
-import matplotlib.pyplot as plt
-import torch
-import torchaudio
-from transformers import AutoConfig, Wav2Vec2Processor, Wav2Vec2Model
-
-import wave
 import pandas as pd
-import matplotlib.pyplot as plt
-from ipywidgets import interact, IntSlider
-from tqdm import trange
-from sklearn import preprocessing
 
+from VATE.dataset import DatasetFS
+from VATE.utils import *
 # faceQs modules
 from VATE.video import Media
-from VATE.dataset import DatasetFS
-from VATE.dataset_utils import *
-from VATE.utils import *
 
 
 class Text(Media):
     """
     Handles audio streams in a Dataset.
     """
+
     def __init__(self, config, dataset: DatasetFS, filename, store, store_info=True, verbose=0):
         super().__init__(config, dataset, filename, store, store_info, verbose)
-        
 
     def merge_info_dataset(self) -> None:
         if self.store_info:

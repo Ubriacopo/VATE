@@ -1,32 +1,28 @@
-import numpy as np
-from dataclasses import dataclass
+import wave
+
 import librosa
 import matplotlib.pyplot as plt
-import torch
-import torchaudio
-from transformers import AutoConfig, Wav2Vec2Processor, Wav2Vec2Model
-
-import wave
 import pandas as pd
-import matplotlib.pyplot as plt
+import torchaudio
 from ipywidgets import interact, IntSlider
-from tqdm import trange
 from sklearn import preprocessing
+from tqdm import trange
+from transformers import Wav2Vec2Processor, Wav2Vec2Model
 
+from VATE.dataset import DatasetFS
+from VATE.utils import *
 # faceQs modules
 from VATE.video import Media
-from VATE.dataset import DatasetFS
-from VATE.dataset_utils import *
-from VATE.utils import *
 
 
 class Audio(Media):
     """
     Handles audio streams in a Dataset.
     """
+
     def __init__(self, config, dataset: DatasetFS, filename, store, store_info=True, verbose=0):
         super().__init__(config, dataset, filename, store, store_info, verbose)
-        
+
         self.set_MFCC_params(hop_length=33.34, win_size=1024)
 
     def merge_info_dataset(self) -> None:
@@ -50,7 +46,8 @@ class Audio(Media):
         sample_rate = obj.getframerate()
         num_frames = obj.getnframes()
         obj.close()
-        return {"videopath": videopath, "num_channels": num_channels, "samp_width": samp_width, "sample_rate": sample_rate, "num_frames": num_frames}
+        return {"videopath": videopath, "num_channels": num_channels, "samp_width": samp_width,
+                "sample_rate": sample_rate, "num_frames": num_frames}
 
     def set_dataset(self, dataset: DatasetFS):
         """
@@ -85,7 +82,7 @@ class Audio(Media):
         """
         audiopath = self.dataset.get_filename(index, full=True)
         # self.audio_data, self.sample_rate = librosa.load(audiopath)
-        self.audio_data, self.sample_rate =  torchaudio.load(audiopath)
+        self.audio_data, self.sample_rate = torchaudio.load(audiopath)
         self.num_channels = self.audio_data.ndim
 
     def compute_feature_hubert(self):
@@ -96,9 +93,9 @@ class Audio(Media):
         return waveform
 
     def compute_feature_wav2vec(self):
-        
+
         model_id = "jonatasgrosman/wav2vec2-large-xlsr-53-english"
-        processor = Wav2Vec2Processor.from_pretrained(model_id,)
+        processor = Wav2Vec2Processor.from_pretrained(model_id, )
         model = Wav2Vec2Model.from_pretrained(model_id).to("cuda")
         target_sampling_rate = processor.feature_extractor.sampling_rate
         self.feature = processor(self.audio_data, sampling_rate=target_sampling_rate, return_tensors="pt", padding=True)
@@ -108,7 +105,7 @@ class Audio(Media):
         with torch.no_grad():
             self.feature = model(input_values, attention_mask=attention_mask)
         self.feature = self.feature["extract_features"].squeeze(0).cpu()
-        
+
     def compute_raw(self) -> None:
         """
         Extracts the MFCC of the specified audio file. Librosa uses centered frames,
@@ -117,7 +114,7 @@ class Audio(Media):
 
         # compute MFCC features from the raw signal
         hop_length_sample = int(self.hop_length * self.sample_rate / 1000.0)
-        x = librosa.feature.melspectrogram(y=self.audio_data, sr=self.sample_rate, hop_length= hop_length_sample)
+        x = librosa.feature.melspectrogram(y=self.audio_data, sr=self.sample_rate, hop_length=hop_length_sample)
         x = x.transpose(1, 0)
         # t, c = x.shape
         # window = 10
@@ -126,10 +123,10 @@ class Audio(Media):
         # x2 = np.zeros((t, window, c))
         # for i in range(t):
         #     x2[i] = x[i:i+window]
-        
+
         # and the first and second-order differences (delta features)
         self.feature = np.float32(x)
-    
+
     def length_audio(self) -> None:
         """
         Extracts the MFCC of the specified audio file. Librosa uses centered frames,
@@ -147,7 +144,8 @@ class Audio(Media):
 
         # compute MFCC features from the raw signal
         hop_length_sample = int(self.hop_length * self.sample_rate / 1000.0)
-        mfcc = librosa.feature.mfcc(y=self.audio_data, sr=self.sample_rate, hop_length=hop_length_sample, n_fft=self.win_size, n_mfcc=self.n_mfcc)
+        mfcc = librosa.feature.mfcc(y=self.audio_data, sr=self.sample_rate, hop_length=hop_length_sample,
+                                    n_fft=self.win_size, n_mfcc=self.n_mfcc)
         # and the first and second-order differences (delta features)
         self.mfcc = mfcc
         if self.delta1:
@@ -166,7 +164,7 @@ class Audio(Media):
         self.mfcc = self.mfcc.transpose(1, 0)
         self.feature = np.float32(self.mfcc)
 
-    def extract_all_stream(self, use = "wav2vec") -> None:
+    def extract_all_stream(self, use="wav2vec") -> None:
         """
         Extract MFCC for a subset of (all) audio.
         """
@@ -213,7 +211,7 @@ class Audio(Media):
             for k in range(frame_num):
                 left = int(max(int((k + 1) * hop_size - win_size / 2), 0))
                 right = int(min(int((k + 1) * hop_size + win_size / 2), audio_length))
-                self.frames[k, 0 : right - left] = self.audio_data[left:right]
+                self.frames[k, 0: right - left] = self.audio_data[left:right]
         else:
             frame_num = np.floor(audio_length / hop_size + 1).astype(int)
             self.frames = np.zeros((frame_num, win_size))
@@ -222,7 +220,7 @@ class Audio(Media):
                 left = k * hop_size
                 right = min(left + win_size, audio_length)
                 if right - left < win_size:
-                    self.frames[k, 0 : right - left] = self.audio_data[left:right]
+                    self.frames[k, 0: right - left] = self.audio_data[left:right]
                 else:
                     self.frames[k] = self.audio_data[left:right]
 

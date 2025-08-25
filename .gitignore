@@ -1,4 +1,4 @@
-/VATE/feature_extraction/VATE
+/src/VATE/feature_extraction/VATE
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

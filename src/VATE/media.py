@@ -4,9 +4,8 @@ from abc import ABC, abstractmethod
 
 # faceQs modules
 from VATE.dataset import DatasetFS
-from VATE.dataset_utils import *
 from VATE.utils import *
-
+from VATE.dataset_utils import *
 
 class Media(ABC):
     def __init__(self, config, dataset: DatasetFS, filename, store, store_info=True, verbose=0):

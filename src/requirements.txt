@@ -1,0 +1,16 @@
+opencv-python
+mediapipe
+pytubefix
+speechrecognition
+moviepy
+pytube
+tqdm
+scikit-learn
+ipywidgets
+pandas
+matplotlib
+transformers
+torchaudio
+torch
+librosa
+numpy

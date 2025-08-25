@@ -1,0 +1,36 @@
+# TODO Finire
+[project]
+name = "VATE"
+version = "0.0.1"
+authors = [{ name = "Francesco Agnelli" }]
+description = "VATE"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "opencv-python",
+    "mediapipe",
+    "pytubefix",
+    "speechrecognition",
+    "moviepy",
+    "pytube",
+    "tqdm",
+    "scikit-learn",
+    "ipywidgets",
+    "pandas",
+    "matplotlib",
+    "transformers",
+    "torchaudio",
+    "torch",
+    "librosa",
+    "numpy",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/pypa/sampleproject"
+Issues = "https://github.com/pypa/sampleproject/issues"

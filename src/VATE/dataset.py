@@ -8,7 +8,6 @@ import random
 from VATE.utils import *
 from VATE.dataset_utils import *
 
-
 class DatasetFS(ABC):
     """
     Represents datasets of three types: 'Video', Audio', 'Image', handling the

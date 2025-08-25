@@ -3,7 +3,6 @@ import cv2
 import pandas as pd
 from tqdm import trange
 
-
 import torch
 from torchvision import transforms
 
@@ -13,10 +12,12 @@ from VATE.media import Media
 from VATE.utils import *
 from VATE.dataset_utils import *
 
+
 class Video(Media):
     """
     Handles video streams in a Dataset.
     """
+
     def __init__(self, config, dataset: DatasetFS, filename, store, store_info=True, verbose=0):
         super().__init__(config, dataset, filename, store, store_info, verbose)
 
@@ -42,7 +43,8 @@ class Video(Media):
         totalFrames = int(vidCap.get(cv2.CAP_PROP_FRAME_COUNT))
         fps = vidCap.get(cv2.CAP_PROP_FPS)
         duration = totalFrames / fps
-        return {"videopath": videopath, "height": height, "width": width, "totalFrames": totalFrames, "fps": fps, "duration": duration}
+        return {"videopath": videopath, "height": height, "width": width, "totalFrames": totalFrames, "fps": fps,
+                "duration": duration}
 
     def get_frames(self, index=None, videopath=None):
         """
@@ -73,7 +75,7 @@ class Video(Media):
                 raise StopIteration
 
     def load_video_frames(self, videopath=None, index=None, max_frames=3000):
-        
+
         frames = []
         count = 0
 
@@ -81,12 +83,12 @@ class Video(Media):
             videopath = self.dataset.get_filename(index, full=True)
         if videopath:
             vidcap = cv2.VideoCapture(videopath)
-        
+
         while vidcap.isOpened() and count < max_frames:
             ret, frame = vidcap.read()
             if not ret:
                 break
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) #cv2.COLOR_BGR2GRAY
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # cv2.COLOR_BGR2GRAY
             frames.append(frame)
             count += 1
 
@@ -107,4 +109,4 @@ class Video(Media):
         #     transforms.Normalize(mean=[0.5], std=[0.5]),])
 
         processed_frames = [transform(frame) for frame in self.frames]
-        return torch.stack(processed_frames)[::6,:,:,:]  # Shape: (num_frames, 3, height, width)
+        return torch.stack(processed_frames)[::6, :, :, :]  # Shape: (num_frames, 3, height, width)
